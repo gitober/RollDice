@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Pull code from your Git repository
-                git url: 'https://github.com/gitober/TimeCalculator.git', branch: 'main'
+                git url: 'https://github.com/gitober/RollDice.git', branch: 'main'
             }
         }
 
