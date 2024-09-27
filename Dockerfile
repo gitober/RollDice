@@ -1,21 +1,27 @@
+# Stage 1: Build the application
+FROM maven:3.8.8-eclipse-temurin-17 AS build
 
-# Use an official Maven image as a parent image
-FROM maven:latest
-
-# Set metadata information
-LABEL authors="gittao"
-
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the pom.xml file to the container
+# Copy the pom.xml and download dependencies
 COPY pom.xml /app/
+RUN mvn dependency:go-offline
 
-# Copy the entire project to the container
+# Copy the source code
 COPY . /app/
 
-# Package your application
-RUN mvn package
+# Build the application
+RUN mvn package -DskipTests
 
-# Run the main class (assuming your application has a main class)
-CMD ["java", "-jar", "target/DiceRoll.jar"]
+# Stage 2: Run the application
+FROM eclipse-temurin:17-jdk
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the JAR file from the build stage
+COPY --from=build /app/target/DiceRoll-1.0-SNAPSHOT.jar /app/DiceRoll.jar
+
+# Run the application
+CMD ["java", "-jar", "/app/DiceRoll.jar"]
